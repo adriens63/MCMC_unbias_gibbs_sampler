@@ -13,8 +13,9 @@ ocamlfind ocamlopt -o program -linkpkg -package pkg module1.cmx module2.cmx
 
 
 (* simple gibbs sampling *)
-
-
+type bayesianVariables = {capital_a: float; mu: float; theta: float array};;
+type mcmcChain = bayesianVariables list;;
+type sequentialVariable = float list;;
 
 
 (* constants *)
@@ -52,12 +53,13 @@ let assign_end = fun (arr_1: 'a array) (arr_2: 'a array) ->
     arr_1 ;;
 
 
-let gibbs_sampler = fun (x: float array) ->
-    (* x is in fact x_t_1, and this fun returns x_t *)
+let gibbs_sampler = fun (x_t_1: bayesianVariables) ->
+    (* input is x_t_1, and this fun returns x_t *)
     (* extract the useful information from x_t-1, ie theta in our case *)
-    let capital_k_int = Array.length x - 2 in 
-    let theta = Array.sub x 2 capital_k_int
+    let theta = x_t_1.theta
     in
+    let capital_k_int = Array.length theta 
+    in  
     let capital_k = float_of_int(capital_k_int)
     in
     let (sum_gamma, mean_mu) = sum_over_theta theta
@@ -78,31 +80,20 @@ let gibbs_sampler = fun (x: float array) ->
     done;
     
     (* storage of x_t *)
-    let x = assign_end x theta in
-    x.(0) <- capital_a;
-    x.(1) <- mu;
-    x;;
+    let x_t = {capital_a = capital_a; mu = mu; theta = theta}
+    in x_t;;
 
 
 
-
-
+let rec generate_chain (n_steps: int) (x_t: bayesianVariables) = match n_steps with
+    |n when n <= 0 -> []
+    |_             -> x_t::generate_chain (n_steps - 1) (gibbs_sampler x_t)
+;;
 
     
-
-(* test *)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+let plot_chain = fun (mcmc_chain: mcmcChain) -> 
+    let rec acc (mcmc_chain: mcmcChain) (capital_as: sequentialVariable) (mus: sequentialVariable) (thetas_0: sequentialVariable) = match mcmc_chain with
+    |[] -> capital_as, mus, thetas_0
+    |e::q -> acc q (e.capital_a::capital_as) (e.mu::mus) (e.theta.(0)::thetas_0)
+    in let (capital_as, mus, thetas_0) = acc mcmc_chain [] [] []
+;

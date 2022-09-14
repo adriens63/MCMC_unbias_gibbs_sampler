@@ -1,3 +1,6 @@
+open Mcmc
+
+
 (* main *)
 
 
@@ -7,10 +10,19 @@
 
 
 
+let main = fun () -> 
 
-(* constants *)
-let capital_v = 0.00434 and a = -1. and b = 2. ;;
-let z = [|0.395; 0.375; 0.355; 0.334; 0.313; 0.313; 0.291; 0.269; 0.247; 0.247; 0.224; 0.224;
-0.224; 0.224; 0.224; 0.200; 0.175; 0.148|];;
+  let capital_k_int = Array.length z
+  in
+  let n_steps = read_int () 
+  and 
+  let x_0 = {capital_a = 1.; mu = 1.; theta = Array.make capital_k_int (snd sum_over_theta z)}
+  in  
+  let mcmc_chain = generate_chain n_steps x_0
+
+  ;;
+
+let () = main ()
+
 
 
