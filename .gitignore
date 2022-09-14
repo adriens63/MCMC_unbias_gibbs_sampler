@@ -1,1 +1,8 @@
 hello.ml
+draft.ml
+draft_compile*
+try*
+useful*
+
+*.cm*
+*.o

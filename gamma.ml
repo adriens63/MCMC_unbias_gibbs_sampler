@@ -21,5 +21,4 @@ module Lanczos = struct
     sqrttwopi *. p ** (z +. 0.5) *. exp (-. p) *. ag z 0
 end
 
-let t = Lanczos.gamma 5. ;;
-print_float(t)
+
