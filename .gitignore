@@ -1,0 +1,16 @@
+hello.ml
+draft.ml
+draft_compile*
+try*
+useful*
+
+*.cm*
+*.o
+*.ps
+*.png
+
+*.out
+
+draft_compile
+launch_mcmc
+launch_mcmc_coupled
