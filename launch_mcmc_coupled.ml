@@ -7,12 +7,18 @@ open Format
 
 
 (* launch *)
-(* ocamlfind ocamlopt -o launch_mcmc -linkpkg -package owl,owl-plplot gamma.ml randomx.ml mcmc.ml launch_mcmc.ml *)
-(* QT_QPA_PLATFORM=offscreen ./launch_mcmc  *)
+(* ocamlfind ocamlopt -o launch_mcmc_coupled -linkpkg -package owl,owl-plplot gamma.ml randomx.ml mcmc.ml launch_mcmc_coupled.ml
+QT_QPA_PLATFORM=offscreen ./launch_mcmc_coupled *)
+
+
+(* for compiling in debug mode:
+   ocamlfind ocamlc -g launch_mcmc_coupled -linkpkg -package owl,owl-plplot gamma.ml randomx.ml mcmc.ml launch_mcmc_coupled.ml  *)
+
 
 
 (* the first input is the random seed *)
 (* the second input is the number of samples *)
+
 
 
 let main = fun () -> 
@@ -24,12 +30,16 @@ let main = fun () ->
   let n_steps = List.hd numbers 
   in 
   let x_0 = {capital_a = 1.; mu = 1.; theta = Array.make capital_k_int (snd (sum_over_theta z))}
+  in
+  let xy_0 = {x_t = x_0; y_t_1 = x_0}
   in  
-  let mcmc_chain = generate_chain n_steps x_0
+  let mcmc_chain = CoupledGibbsSampler.generate_estimators 1 50 xy_0 n_steps
   in
   let m = chain_to_matrix mcmc_chain n_steps
   in
-  let h = Plot.create ~m:2 ~n:2 "plot_003.png" in
+  let r  = Mat.col m 1 
+  in
+  let h = Plot.create ~m:2 ~n:2 "plot_004.png" in
   Plot.set_background_color h 255 255 255;
 
   (* focus on the subplot at 0,0 *)
@@ -66,6 +76,3 @@ let main = fun () ->
 
 
 let () = main ()
-
-
-
